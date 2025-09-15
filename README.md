@@ -11,8 +11,6 @@ Axon is a lightweight Go library for building interactive command-line applicati
 - Automatic masking of phone numbers to protect user privacy
 - Colored output support for enhanced visual experience
 
-> Already used in the Millisecond Mirror CLI configuration tool (shown below)
-
 ![Millisecond Mirror Configuration Tool Screenshot](./_image/Snipaste_2025-09-15_16-42-20.png)
 
 ## Installation
