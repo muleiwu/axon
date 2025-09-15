@@ -25,6 +25,7 @@ package main
 import (
 	"fmt"
 	"github.com/muleiwu/axon"
+	"github.com/muleiwu/axon/pkg/question"
 )
 
 func main() {
@@ -50,7 +51,7 @@ func main() {
 	fmt.Println("手机号已保存")
 	
 	// 选择列表
-	items := []axon.SelectionItem{
+	items := []question.SelectionItem{
 		{Label: "选项一", Description: "这是第一个选项", Value: "option1"},
 		{Label: "选项二", Description: "这是第二个选项", Value: "option2"},
 		{Label: "选项三", Description: "这是第三个选项", Value: "option3"},
