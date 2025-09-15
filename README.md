@@ -1,27 +1,27 @@
 # Axon
 
-Axon 是一个用于构建交互式命令行应用的轻量级 Go 库，提供了简洁易用的终端交互功能。
+Axon is a lightweight Go library for building interactive command-line applications, providing simple and easy-to-use terminal interaction features.
 
-## 功能特点
+## Features
 
-- 简单易用的 API，专注于提供优质的终端交互体验
-- 支持多种交互方式：普通问答、确认选择、密码输入、电话号码输入和列表选择
-- 内置数据验证和格式化功能
-- 支持默认值设置
-- 电话号码自动脱敏处理，保护用户隐私
-- 彩色输出支持，增强视觉体验
+- Simple and easy-to-use API, focused on providing quality terminal interaction experiences
+- Supports multiple interaction methods: standard questions, confirmation prompts, password input, phone number input, and list selection
+- Built-in data validation and formatting functions
+- Support for default values
+- Automatic masking of phone numbers to protect user privacy
+- Colored output support for enhanced visual experience
 
-> 已经在 毫秒镜像 CLI配置工具 应用（如下）
+> Already used in the Millisecond Mirror CLI configuration tool (shown below)
 
-![毫秒镜像配置工具截图](./_image/Snipaste_2025-09-15_16-42-20.png)
+![Millisecond Mirror Configuration Tool Screenshot](./_image/Snipaste_2025-09-15_16-42-20.png)
 
-## 安装
+## Installation
 
 ```bash
 go get github.com/muleiwu/axon
 ```
 
-## 快速开始
+## Quick Start
 
 ```go
 package main
@@ -33,117 +33,117 @@ import (
 )
 
 func main() {
-	// 普通问题
-	name := axon.Question("请输入您的姓名: ", "")
-	fmt.Printf("您好，%s!\n", name)
+	// Standard question
+	name := axon.Question("Please enter your name: ", "")
+	fmt.Printf("Hello, %s!\n", name)
 	
-	// 确认问题
-	proceed := axon.Confirm("是否继续? (y/n) ", true)
+	// Confirmation question
+	proceed := axon.Confirm("Continue? (y/n) ", true)
 	if proceed {
-		fmt.Println("继续执行...")
+		fmt.Println("Continuing...")
 	} else {
-		fmt.Println("已取消")
+		fmt.Println("Cancelled")
 		return
 	}
 	
-	// 密码输入（隐藏显示）
-	password := axon.Password("请输入密码: ", "")
-	fmt.Println("密码已保存")
+	// Password input (hidden display)
+	password := axon.Password("Please enter password: ", "")
+	fmt.Println("Password saved")
 	
-	// 电话号码（带验证和脱敏）
-	phone := axon.PhoneNumber("请输入手机号: ", "")
-	fmt.Println("手机号已保存")
+	// Phone number (with validation and masking)
+	phone := axon.PhoneNumber("Please enter mobile number: ", "")
+	fmt.Println("Mobile number saved")
 	
-	// 选择列表
+	// Selection list
 	items := []question.SelectionItem{
-		{Label: "选项一", Description: "这是第一个选项", Value: "option1"},
-		{Label: "选项二", Description: "这是第二个选项", Value: "option2"},
-		{Label: "选项三", Description: "这是第三个选项", Value: "option3"},
+		{Label: "Option 1", Description: "This is the first option", Value: "option1"},
+		{Label: "Option 2", Description: "This is the second option", Value: "option2"},
+		{Label: "Option 3", Description: "This is the third option", Value: "option3"},
 	}
-	selected := axon.Selection("请选择一个选项:", items)
+	selected := axon.Selection("Please select an option:", items)
 	
 	if selected == "exit" {
-		fmt.Println("您选择了退出")
+		fmt.Println("You chose to exit")
 	} else {
-		fmt.Printf("您选择了: %s\n", selected)
+		fmt.Printf("You selected: %s\n", selected)
 	}
 }
 ```
 
-## API 参考
+## API Reference
 
-### 普通问题
+### Standard Question
 
 ```go
 func Question(question string, defaultValue string) string
 ```
 
-询问用户普通问题并获取文本输入。
+Ask the user a standard question and get text input.
 
-- `question`: 要显示给用户的问题文本
-- `defaultValue`: 默认值，当用户直接按回车时使用
-- 返回: 用户输入的字符串
+- `question`: The question text to display to the user
+- `defaultValue`: Default value, used when the user presses enter directly
+- Returns: The string entered by the user
 
-### 确认问题
+### Confirmation Question
 
 ```go
 func Confirm(question string, defaultValue bool) bool
 ```
 
-询问用户确认问题，获取 yes/no 回答。
+Ask the user a confirmation question to get a yes/no answer.
 
-- `question`: 要显示给用户的问题文本
-- `defaultValue`: 默认值，当用户直接按回车时使用
-- 返回: 用户的选择结果(true/false)
+- `question`: The question text to display to the user
+- `defaultValue`: Default value, used when the user presses enter directly
+- Returns: The user's selection result (true/false)
 
-### 密码输入
+### Password Input
 
 ```go
 func Password(question string, defaultValue string) string
 ```
 
-询问用户密码，输入过程中密码会被隐藏显示。
+Ask the user for a password, which will be hidden during input.
 
-- `question`: 要显示给用户的问题文本
-- `defaultValue`: 默认值，当用户直接按回车时使用
-- 返回: 用户输入的密码字符串
+- `question`: The question text to display to the user
+- `defaultValue`: Default value, used when the user presses enter directly
+- Returns: The password string entered by the user
 
-### 电话号码输入
+### Phone Number Input
 
 ```go
 func PhoneNumber(question string, defaultValue string) string
 ```
 
-询问用户电话号码，包含格式验证功能。输入后自动脱敏处理，保护用户隐私。
+Ask the user for a phone number, with format validation. The input is automatically masked to protect user privacy.
 
-- `question`: 要显示给用户的问题文本
-- `defaultValue`: 默认值，当用户直接按回车时使用
-- 返回: 经过验证的电话号码字符串
+- `question`: The question text to display to the user
+- `defaultValue`: Default value, used when the user presses enter directly
+- Returns: The validated phone number string
 
-### 选择列表
+### Selection List
 
 ```go
 func Selection(question string, items []SelectionItem) string
 ```
 
-让用户从列表中选择一项。
+Let the user select an item from a list.
 
-- `question`: 要显示给用户的问题文本
-- `items`: 选择项列表
-- 返回: 用户选择的项目的Value，如果选择退出则返回"exit"
+- `question`: The question text to display to the user
+- `items`: The list of selection items
+- Returns: The Value of the selected item, or "exit" if the user chooses to exit
 
-## 自定义选择项
+## Custom Selection Items
 
-创建选择列表时，可以使用 `SelectionItem` 结构定义选项：
+When creating a selection list, you can define options using the `SelectionItem` structure:
 
 ```go
 type SelectionItem struct {
-	Label       string // 显示的标签
-	Description string // 描述信息
-	Value       string // 实际值
+	Label       string // The display label
+	Description string // Description information
+	Value       string // Actual value
 }
 ```
 
-## 许可证
+## License
 
-本项目采用 [LICENSE](LICENSE) 许可证开源。
+This project is open source under the [LICENSE](LICENSE) license.
