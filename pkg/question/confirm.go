@@ -16,15 +16,21 @@ func NewConfirm() *Confirm {
 
 func (q *Confirm) Execute(question string, def any) any {
 	if strings.Contains(question, "</>") {
-		color.Print(question)
+		color.Println(question)
 	} else {
-		color.Info.Print(question)
+		color.Info.Println(question)
+	}
+	if def.(bool) {
+		color.Info.Print("默认: y")
+	} else {
+		color.Info.Print("默认: n")
 	}
 	color.Info.Print(" [")
 	color.LightGreen.Print("Y")
 	color.Info.Print("es/")
 	color.LightRed.Print("N")
 	color.Info.Print("o] : ")
+
 	input, _ := q.readInput()
 	return q.validateInput(input, def.(bool))
 }
