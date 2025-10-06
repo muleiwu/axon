@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"syscall"
-	"unsafe"
 
 	"github.com/gookit/color"
+	"golang.org/x/term"
 )
 
 type Confirm struct {
@@ -91,33 +90,23 @@ func (q *Confirm) readInput(def bool) (string, error) {
 	}
 }
 
-// setRawMode 设置终端为原始模式
-func (q *Confirm) setRawMode() (*syscall.Termios, error) {
-	var oldState syscall.Termios
-	_, _, err := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(os.Stdin.Fd()),
-		uintptr(syscall.TIOCGETA), uintptr(unsafe.Pointer(&oldState)), 0, 0, 0)
-	if err != 0 {
+// setRawMode 设置终端为原始模式（跨平台兼容）
+func (q *Confirm) setRawMode() (interface{}, error) {
+	// 使用golang.org/x/term包，自动处理不同平台的差异
+	oldState, err := term.MakeRaw(int(os.Stdin.Fd()))
+	if err != nil {
 		return nil, err
 	}
-
-	newState := oldState
-	newState.Lflag &^= syscall.ICANON | syscall.ECHO
-	newState.Cc[syscall.VMIN] = 1
-	newState.Cc[syscall.VTIME] = 0
-
-	_, _, err = syscall.Syscall6(syscall.SYS_IOCTL, uintptr(os.Stdin.Fd()),
-		uintptr(syscall.TIOCSETA), uintptr(unsafe.Pointer(&newState)), 0, 0, 0)
-	if err != 0 {
-		return nil, err
-	}
-
-	return &oldState, nil
+	return oldState, nil
 }
 
-// restoreMode 恢复终端模式
-func (q *Confirm) restoreMode(oldState *syscall.Termios) {
-	syscall.Syscall6(syscall.SYS_IOCTL, uintptr(os.Stdin.Fd()),
-		uintptr(syscall.TIOCSETA), uintptr(unsafe.Pointer(oldState)), 0, 0, 0)
+// restoreMode 恢复终端模式（跨平台兼容）
+func (q *Confirm) restoreMode(oldState interface{}) {
+	if oldState != nil {
+		if state, ok := oldState.(*term.State); ok {
+			term.Restore(int(os.Stdin.Fd()), state)
+		}
+	}
 }
 
 func (q *Confirm) validateInput(input string, defaultValue bool) any {
