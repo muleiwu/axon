@@ -26,7 +26,7 @@ func (q *Confirm) Execute(question string, def any) any {
 		color.Info.Print("默认: n")
 	}
 	color.Info.Print(" [")
-	color.LightGreen.Print("Y")
+	color.LightBlue.Print("Y")
 	color.Info.Print("es/")
 	color.LightRed.Print("N")
 	color.Info.Print("o] : ")
