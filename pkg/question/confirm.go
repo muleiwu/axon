@@ -20,26 +20,22 @@ func NewConfirm() *Confirm {
 
 func (q *Confirm) Execute(question string, def any) any {
 	if strings.Contains(question, "</>") {
-		color.Println(question)
+		color.Print(question)
 	} else {
-		color.Info.Println(question)
+		color.Info.Print(question)
 	}
-	if def.(bool) {
-		color.Info.Print("默认: y")
-	} else {
-		color.Info.Print("默认: n")
-	}
+
 	color.Info.Print(" [")
 	color.LightBlue.Print("Y")
 	color.Info.Print("es/")
 	color.LightRed.Print("N")
 	color.Info.Print("o] : ")
 
-	input, _ := q.readInput()
+	input, _ := q.readInput(def.(bool))
 	return q.validateInput(input, def.(bool))
 }
 
-func (q *Confirm) readInput() (string, error) {
+func (q *Confirm) readInput(def bool) (string, error) {
 	// 设置终端为原始模式，禁用缓冲
 	oldState, err := q.setRawMode()
 	if err != nil {
@@ -50,10 +46,28 @@ func (q *Confirm) readInput() (string, error) {
 	reader := bufio.NewReader(os.Stdin)
 	var input string
 
+	// 显示默认值
+	if def {
+		fmt.Print("Y")
+		input = "Y"
+	} else {
+		fmt.Print("N")
+		input = "N"
+	}
+
 	for {
 		char, _, err := reader.ReadRune()
 		if err != nil {
 			return "", err
+		}
+
+		// 处理删除键 (Backspace = 127, Delete = 8)
+		if char == 127 || char == 8 {
+			if input != "" {
+				fmt.Print("\b \b") // 删除前一个字符
+				input = ""
+			}
+			continue
 		}
 
 		// 只接受YyNn字符
@@ -68,12 +82,8 @@ func (q *Confirm) readInput() (string, error) {
 			input = string(char)
 		case '\r', '\n':
 			// 按回车确认
-			if input != "" {
-				fmt.Println()
-				return input, nil
-			}
-			// 如果还没有输入有效字符，忽略回车
-			continue
+			fmt.Println()
+			return input, nil
 		default:
 			// 忽略其他字符，不显示
 			continue
