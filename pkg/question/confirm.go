@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 
 	"github.com/gookit/color"
 	"golang.org/x/term"
@@ -42,6 +44,11 @@ func (q *Confirm) readInput(def bool) (string, error) {
 	}
 	defer q.restoreMode(oldState)
 
+	// 设置信号处理，确保Ctrl+C能正常终止程序
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+	defer signal.Stop(sigChan)
+
 	reader := bufio.NewReader(os.Stdin)
 	var input string
 
@@ -55,9 +62,27 @@ func (q *Confirm) readInput(def bool) (string, error) {
 	}
 
 	for {
+		// 使用select来同时监听键盘输入和信号
+		select {
+		case <-sigChan:
+			// 收到中断信号，恢复终端模式并退出
+			q.restoreMode(oldState)
+			fmt.Println() // 换行
+			os.Exit(0)
+		default:
+			// 非阻塞读取键盘输入
+		}
+
 		char, _, err := reader.ReadRune()
 		if err != nil {
 			return "", err
+		}
+
+		// 处理Ctrl+C (ASCII 3)
+		if char == 3 {
+			q.restoreMode(oldState)
+			fmt.Println() // 换行
+			os.Exit(0)
 		}
 
 		// 处理删除键 (Backspace = 127, Delete = 8)
