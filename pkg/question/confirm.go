@@ -67,7 +67,7 @@ func (q *Confirm) readInput(def bool) (string, error) {
 		case <-sigChan:
 			// 收到中断信号，恢复终端模式并退出
 			q.restoreMode(oldState)
-			fmt.Println() // 换行
+			fmt.Print("\r\n") // 换行
 			os.Exit(0)
 		default:
 			// 非阻塞读取键盘输入
@@ -81,7 +81,7 @@ func (q *Confirm) readInput(def bool) (string, error) {
 		// 处理Ctrl+C (ASCII 3)
 		if char == 3 {
 			q.restoreMode(oldState)
-			fmt.Println() // 换行
+			fmt.Print("\r\n") // 换行
 			os.Exit(0)
 		}
 
@@ -106,7 +106,7 @@ func (q *Confirm) readInput(def bool) (string, error) {
 			input = string(char)
 		case '\r', '\n':
 			// 按回车确认
-			fmt.Println()
+			fmt.Print("\r\n")
 			return input, nil
 		default:
 			// 忽略其他字符，不显示
